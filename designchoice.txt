@@ -1,0 +1,30 @@
+### Pilihan Desain
+
+1. **Separation of Concerns**: Kode diorganisasikan dengan pendekatan modular untuk memisahkan berbagai aspek aplikasi menjadi lapisan yang berbeda:
+   - **Models (Model)**: Lapisan ini mendefinisikan struktur data menggunakan ORM SQLAlchemy, mewakili tabel untuk `Authors` (Penulis) dan `Books` (Buku). Setiap kelas model mengenkapsulasi logika yang terkait dengan data, memastikan pemetaan yang jelas antara skema basis data dan logika aplikasi.
+   - **Routes (Views/Controllers)**: Lapisan ini menangani permintaan HTTP yang masuk, memetakannya ke fungsi yang sesuai, dan mengembalikan respons HTTP. Pemisahan ini membuat kode lebih mudah dibaca dan dipelihara.
+   - **Konfigurasi**: File konfigurasi khusus (`config.py`) digunakan untuk mengelola variabel lingkungan, string koneksi basis data, dan pengaturan lainnya. Pendekatan ini memungkinkan fleksibilitas dan skalabilitas, memudahkan untuk beralih lingkungan (pengembangan, pengujian, produksi) hanya dengan mengubah parameter konfigurasi.
+
+2. **Desain API RESTful**: API dirancang mengikuti prinsip REST, yang mengedepankan skalabilitas, tidak menyimpan status (stateless), dan antarmuka yang seragam. API menyediakan endpoint untuk mengelola sumber daya `Authors` dan `Books`, termasuk operasi CRUD standar (`GET`, `POST`, `PUT`, `DELETE`). Penggunaan pola URL yang dapat diprediksi (misalnya, `/authors`, `/books`, `/authors/{id}/books`) memastikan desain API yang konsisten dan mudah digunakan.
+
+3. **ORM SQLAlchemy**: Pemilihan SQLAlchemy sebagai ORM (Object Relational Mapping) menyederhanakan interaksi dengan basis data dengan memungkinkan pengembang bekerja dengan objek Python daripada menulis kueri SQL mentah. Abstraksi ini tidak hanya mempercepat pengembangan tetapi juga membuat kode lebih mudah dibaca. Selain itu, SQLAlchemy mendukung berbagai backend basis data (seperti MySQL, PostgreSQL), menjadikan aplikasi ini portabel di berbagai sistem basis data.
+
+4. **Penggunaan Basis Data MySQL**: MySQL adalah basis data relasional sumber terbuka yang populer, dikenal karena keandalannya dan kinerjanya. MySQL mendukung kueri kompleks, transaksi, dan pengindeksan, yang penting untuk mengelola kumpulan data besar dalam sistem manajemen perpustakaan.
+
+5. **Framework Flask**: Flask dipilih karena kesederhanaan dan sifatnya yang ringan, yang membuatnya cocok untuk membangun aplikasi web berskala kecil hingga menengah. Desain modular Flask memungkinkan pengembang untuk menyisipkan ekstensi sesuai kebutuhan, memberikan fleksibilitas untuk meningkatkan skala aplikasi. API Flask yang jelas dan sederhana juga mempercepat waktu pengembangan.
+
+### Teknik Peningkatan Kinerja
+
+1. **Pengindeksan Basis Data**: Pengindeksan diterapkan pada kolom yang sering dikueri, seperti `author_id` pada tabel `Books`. Indeks meningkatkan kecepatan operasi pengambilan data dengan mengurangi jumlah data yang perlu dipindai. Dalam sistem ini, mengindeks `author_id` membantu mengeksekusi kueri dengan efisien yang terkait dengan pengambilan semua buku oleh penulis tertentu (`GET /authors/{id}/books`).
+
+2. **Optimasi Kueri**: Mengoptimalkan kueri basis data sangat penting untuk kinerja. Dalam aplikasi ini, hanya field yang diperlukan yang dipilih dalam kueri untuk mengurangi beban pada basis data. Misalnya, saat mencantumkan penulis atau buku, kueri disusun sedemikian rupa untuk menghindari pengambilan data yang tidak diperlukan. Ini mengurangi overhead pemrosesan kumpulan data besar dan transfer data melalui jaringan.
+
+3. **Caching**: Meskipun belum sepenuhnya diterapkan, desain ini mencakup penggunaan mekanisme caching untuk menyimpan data yang sering diakses sementara. Misalnya, menggunakan alat seperti `Flask-Caching` atau Redis untuk menyimpan cache respons permintaan `GET` (misalnya, daftar semua buku atau penulis) dapat secara drastis mengurangi waktu pemuatan dan mengurangi tekanan pada basis data untuk permintaan yang berulang. Strategi caching akan melibatkan pengaturan waktu kedaluwarsa cache yang sesuai untuk memastikan konsistensi data.
+
+4. **Pooling Koneksi**: Pooling koneksi bawaan SQLAlchemy digunakan untuk mengelola dan menggunakan kembali koneksi basis data secara efisien. Pendekatan ini meminimalkan overhead dalam membangun koneksi baru untuk setiap permintaan, mengurangi latensi, dan meningkatkan kinerja, terutama di bawah beban tinggi.
+
+5. **Lazy Loading**: Dalam ORM, lazy loading digunakan untuk menunda pemuatan data terkait hingga data tersebut benar-benar diakses. Pendekatan ini mencegah kueri basis data yang tidak diperlukan saat mengambil entitas, mengoptimalkan penggunaan memori, dan meningkatkan waktu respons.
+
+### Kesimpulan
+
+Pilihan desain dan teknik peningkatan kinerja yang diterapkan memastikan bahwa Sistem Manajemen Perpustakaan dapat diskalakan, dan mampu menangani jumlah pengguna dan entri data yang terus bertambah dengan efisien. Dengan mengikuti update terbaru dalam perkembangan arsitektur perangkat lunak, desain basis data, dan optimasi kinerja, sistem ini sangat cocok sebagai solusi untuk manajemen perpustakaan. Peningkatan di masa depan, seperti menerapkan caching penuh dan optimasi kueri lebih lanjut, dapat terus meningkatkan kinerja sistem seiring bertambahnya dataset.
